@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recherche — RSL Wiki</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .search-box {
+      width: 100%;
+      max-width: 500px;
+      padding: 0.9rem 1.2rem;
+      font-size: 1.1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text);
+      margin: 1.5rem 0;
+      outline: none;
+    }
+    .search-box:focus {
+      border-color: var(--accent);
+    }
+    .search-results {
+      margin-top: 1.5rem;
+    }
+    .search-results .card {
+      margin-bottom: 0.75rem;
+    }
+    .no-result {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    .result-type {
+      font-size: 0.75rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.3rem;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">RSL <span>Wiki</span></a>
+    <div class="nav-links">
+    <a href="index.html">
+      <span data-lang="fr">Accueil</span>
+      <span data-lang="en">Home</span>
+    </a>
+    <a href="conseillers.html">
+      <span data-lang="fr">Conseillers</span>
+      <span data-lang="en">Counsellors</span>
+    </a>
+    <a href="grades.html">
+      <span data-lang="fr">Grades</span>
+      <span data-lang="en">Ranks</span>
+    </a>
+    <a href="pays.html">
+      <span data-lang="fr">Pays</span>
+      <span data-lang="en">Countries</span>
+    </a>
+    <a href="lore.html">Lore</a>
+    <a href="recherche.html" class="active">
+      <span data-lang="fr">Recherche</span>
+      <span data-lang="en">Search</span>
+    </a>
+    <a href="credits.html">
+      <span data-lang="fr">Crédits</span>
+      <span data-lang="en">Credits</span>
+    </a>
+    <div class="lang-switch">
+      <button class="lang-btn" data-set-lang="fr">FR</button>
+      <button class="lang-btn" data-set-lang="en">EN</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <h1>
+    <span data-lang="fr">Recherche</span>
+    <span data-lang="en">Search</span>
+  </h1>
+  <p class="lead">
+    <span data-lang="fr">Cherche un conseiller, un grade, un pays...</span>
+    <span data-lang="en">Search for a counsellor, a rank, a country...</span>
+  </p>
+
+  <input type="text" class="search-box" id="searchInput" 
+    placeholder="Tape un nom, un grade, un pays..." 
+    autocomplete="off">
+
+  <div class="search-results" id="results"></div>
+</div>
+
+<footer>
+  RSL Wiki • RSL Community
+</footer>
+
+<script src="lang.js"></script>
+<script>
+// Searchable data
+const data = [
+  // Conseillers
+  { type: "Conseiller", typeEn: "Counsellor", name: "AutreMembre", desc: "Conseiller actif", descEn: "Active counsellor", url: "membre-autremembre.html" },
+  ...Array.from({length: 13}, (_, i) => ({
+    type: "Head Council", typeEn: "Head Council",
+    name: `Conseil${i+1}`,
+    desc: "Membre du Head Council", descEn: "Head Council Member",
+    url: `membre-conseil${i+1}.html`
+  })),
+  // Grades
+  { type: "Grade", typeEn: "Rank", name: "Soldat non gradé", nameEn: "Unranked Soldier", desc: "Grade de départ", descEn: "Starting rank", url: "grades.html" },
+  { type: "Grade", typeEn: "Rank", name: "Soldat de Tier C", nameEn: "Tier C Soldier", desc: "Premier niveau", descEn: "First level", url: "grades.html" },
+  { type: "Grade", typeEn: "Rank", name: "Soldat de Tier B", nameEn: "Tier B Soldier", desc: "Niveau intermédiaire", descEn: "Intermediate", url: "grades.html" },
+  { type: "Grade", typeEn: "Rank", name: "Soldat de Tier A", nameEn: "Tier A Soldier", desc: "Haut niveau", descEn: "High level", url: "grades.html" },
+  { type: "Grade", typeEn: "Rank", name: "Soldat de Tier S", nameEn: "Tier S Soldier", desc: "Plus haut tier", descEn: "Highest tier", url: "grades.html" },
+  { type: "Grade", typeEn: "Rank", name: "Caporal", nameEn: "Corporal", desc: "Grade armée", descEn: "Army rank", url: "grades.html" },
+  { type: "Grade", typeEn: "Rank", name: "Sergent", nameEn: "Sergeant", desc: "Grade armée", descEn: "Army rank", url: "grades.html" },
+  { type: "Grade", typeEn: "Rank", name: "Lieutenant", nameEn: "Lieutenant", desc: "Grade armée", descEn: "Army rank", url: "grades.html" },
+  { type: "Grade", typeEn: "Rank", name: "Capitaine", nameEn: "Captain", desc: "Grade armée", descEn: "Army rank", url: "grades.html" },
+  { type: "Grade", typeEn: "Rank", name: "Commandant", nameEn: "Major / Commander", desc: "Grade armée", descEn: "Army rank", url: "grades.html" },
+  { type: "Grade", typeEn: "Rank", name: "Colonel", nameEn: "Colonel", desc: "Grade armée", descEn: "Army rank", url: "grades.html" },
+  { type: "Grade", typeEn: "Rank", name: "Général", nameEn: "General", desc: "Grade armée", descEn: "Army rank", url: "grades.html" },
+  { type: "Grade", typeEn: "Rank", name: "Membre du Head Council", nameEn: "Head Council Member", desc: "Rang ultime", descEn: "Ultimate rank", url: "grades.html" },
+  // Pays
+  ...Array.from({length: 8}, (_, i) => ({
+    type: "Pays", typeEn: "Country",
+    name: `Pays ${i+1}`, nameEn: `Country ${i+1}`,
+    desc: "Président, régime, armes, véhicules", descEn: "President, regime, weapons, vehicles",
+    url: "pays.html"
+  })),
+];
+
+const input = document.getElementById("searchInput");
+const results = document.getElementById("results");
+
+function getLang() {
+  return localStorage.getItem("rsl-wiki-lang") || "fr";
+}
+
+function render(items) {
+  const lang = getLang();
+  if (items.length === 0) {
+    results.innerHTML = `<p class="no-result">${lang === "fr" ? "Aucun résultat." : "No results."}</p>`;
+    return;
+  }
+  results.innerHTML = items.map(item => {
+    const type = lang === "fr" ? item.type : (item.typeEn || item.type);
+    const name = lang === "fr" ? item.name : (item.nameEn || item.name);
+    const desc = lang === "fr" ? item.desc : (item.descEn || item.desc);
+    return `
+      <a href="${item.url}" class="card" style="text-decoration:none;color:inherit;display:block;">
+        <div class="result-type">${type}</div>
+        <h3>${name}</h3>
+        <p>${desc}</p>
+      </a>
+    `;
+  }).join("");
+}
+
+input.addEventListener("input", () => {
+  const q = input.value.trim().toLowerCase();
+  if (!q) {
+    results.innerHTML = "";
+    return;
+  }
+  const filtered = data.filter(item => {
+    const searchable = [
+      item.name, item.nameEn, item.desc, item.descEn, item.type, item.typeEn
+    ].filter(Boolean).join(" ").toLowerCase();
+    return searchable.includes(q);
+  });
+  render(filtered);
+});
+
+// Placeholder bilingual
+function updatePlaceholder() {
+  const lang = getLang();
+  input.placeholder = lang === "fr" 
+    ? "Tape un nom, un grade, un pays..." 
+    : "Type a name, a rank, a country...";
+}
+updatePlaceholder();
+// Re-update when language changes
+document.querySelectorAll(".lang-btn").forEach(btn => {
+  btn.addEventListener("click", () => setTimeout(updatePlaceholder, 50));
+});
+</script>
+</body>
+</html>
